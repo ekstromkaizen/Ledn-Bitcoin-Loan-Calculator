@@ -1,0 +1,72 @@
+import java.util.Scanner;
+
+public class btcLoanCalulator {
+    // Instance variables
+    private double loanUsd;
+    private double btcPriceUsd;
+    private int termMonths;
+
+    // Constructor
+    public btcLoanCalulator(double loanUsd, double btcPriceUsd, int termMonths) {
+        this.loanUsd = loanUsd;
+        this.btcPriceUsd = btcPriceUsd;
+        this.termMonths = termMonths;
+    }
+
+    // Method to calculate and print loan details
+    public void printLoanSummary() {
+        // Calculate BTC and sats needed
+        double btcNeeded = loanUsd / btcPriceUsd;
+        long satsToSend = Math.round(btcNeeded * 100_000_000);
+
+        // Admin fee: 2% or minimum $20
+        double adminFee = loanUsd * 0.02;
+        if (adminFee < 20.0) {
+            adminFee = 20.0;
+        }
+
+        // Interest: 10.4% annual → monthly rate
+        double annualInterestRate = 0.104;
+        double monthlyRate = annualInterestRate / 12;
+
+        // Monthly payment using amortization formula
+        double monthlyPayment = (loanUsd * monthlyRate) /
+                (1 - Math.pow(1 + monthlyRate, -termMonths));
+
+        double totalPaid = monthlyPayment * termMonths + adminFee;
+        double totalInterest = totalPaid - loanUsd - adminFee;
+
+        // Payment per paycheck (assuming bi-weekly pay → 2 per month)
+        double payPerCheck = monthlyPayment / 2;
+
+        // Display summary
+        System.out.printf("Loan amount (USD): $%.2f%n", loanUsd);
+        System.out.printf("BTC price (USD): $%.2f%n", btcPriceUsd);
+        System.out.printf("BTC to send: %.8f BTC (%d sats)%n", btcNeeded, satsToSend);
+        System.out.printf("Admin fee: $%.2f%n", adminFee);
+        System.out.printf("Monthly payment: $%.2f%n", monthlyPayment);
+        System.out.printf("Total paid back: $%.2f%n", totalPaid);
+        System.out.printf("Total interest paid: $%.2f%n", totalInterest);
+        System.out.printf("Payment per paycheck (bi-weekly): $%.2f%n", payPerCheck);
+    }
+
+    // Main method to run in BlueJ or console
+    public static void main(String[] args) {
+        Scanner sc = new Scanner(System.in);
+
+        System.out.print("Enter loan amount in USD: ");
+        double loanUsd = sc.nextDouble();
+
+        System.out.print("Enter current BTC price in USD: ");
+        double btcPriceUsd = sc.nextDouble();
+
+        System.out.print("Enter loan term in months: ");
+        int termMonths = sc.nextInt();
+
+        btcLoanCalulator calculator = new btcLoanCalulator(loanUsd, btcPriceUsd, termMonths);
+        System.out.println("\n--- Loan Summary ---");
+        calculator.printLoanSummary();
+
+        sc.close();
+    }
+}
