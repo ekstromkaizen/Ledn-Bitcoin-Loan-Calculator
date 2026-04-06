@@ -1,0 +1,85 @@
+#include <iostream>
+#include <iomanip>
+#include <cmath>
+
+using namespace std;
+
+int main() {
+    double loanAmount; // Amount of the loan in USD
+    double bitcoinPrice; // Current price of Bitcoin in USD
+    double ltvRatio = 0.5; // Initial loan-to-value ratio set to 50%
+    double adminFeeRate = 0.02; // Admin fee rate set to 2%
+    double annualInterestRate = 0.124; // Annual interest rate set to 12.4%
+    double liquidationPrice; // Liquidation price of Bitcoin
+
+    int loanTerm; // Loan term in months
+    char repeat; // To store user input for repeating the calculation
+
+    do {
+        // Input loan amount, Bitcoin price, and loan term
+        cout << "Enter the loan amount in USD: $";
+        cin >> loanAmount;
+
+        cout << "Enter the current price of Bitcoin in USD: $";
+        cin >> bitcoinPrice;
+
+        cout << "Enter the loan term in months: ";
+        cin >> loanTerm;
+
+        // Calculate the amount of Bitcoin needed for collateral
+        double bitcoinCollateral = loanAmount / bitcoinPrice / ltvRatio;
+
+        // Calculate admin fee
+        double adminFee = loanAmount * adminFeeRate;
+
+        // Calculate total repayment amount without interest
+        double totalRepaymentWithoutInterest = loanAmount + adminFee;
+
+        // Calculate interest for the loan term
+        double interest = (loanAmount * annualInterestRate * loanTerm) / 12;
+
+        // Calculate the total repayment amount with interest
+        double totalRepaymentWithInterest = totalRepaymentWithoutInterest + interest;
+
+        // Calculate monthly and weekly payments without interest
+        double monthlyPaymentWithoutInterest = totalRepaymentWithoutInterest / loanTerm;
+        double weeklyPaymentWithoutInterest = monthlyPaymentWithoutInterest / 4.34524;
+
+        // Calculate monthly and weekly payments with interest
+        double monthlyPaymentWithInterest = totalRepaymentWithInterest / loanTerm;
+        double weeklyPaymentWithInterest = monthlyPaymentWithInterest / 4.34524;
+
+        // Calculate total and weekly interest paid
+        double totalInterestPaid = totalRepaymentWithInterest - totalRepaymentWithoutInterest;
+        double weeklyInterestPaid = totalInterestPaid / loanTerm / 4.34524;
+
+        // Calculate the liquidation price
+        liquidationPrice = bitcoinPrice * 0.49999999;
+
+        // Output the results
+        cout << fixed << setprecision(8); // Set precision for Bitcoin collateral
+        cout << "\nLoan Summary:" << endl;
+        cout << left << setw(50) << setfill('.') << "You need Bitcoin for collateral:" << bitcoinCollateral << endl;
+
+        cout << fixed << setprecision(2); // Set precision for monetary values
+        cout << setw(50) << "The admin fee is:" << adminFee << endl;
+        cout << setw(50) << "Total repayment without interest:" << totalRepaymentWithoutInterest << endl;
+        cout << setw(50) << "Total repayment with interest:" << totalRepaymentWithInterest << endl;
+        cout << setw(50) << "Weekly payment without interest:" << weeklyPaymentWithoutInterest << endl;
+        cout << setw(50) << "Weekly payment with interest:" << weeklyPaymentWithInterest << endl;
+        cout << setw(50) << "Monthly payment without interest:" << monthlyPaymentWithoutInterest << endl;
+        cout << setw(50) << "Monthly payment with interest:" << monthlyPaymentWithInterest << endl;
+        cout << setw(50) << "Total interest paid:" << totalInterestPaid << endl;
+        cout << setw(50) << "Weekly interest paid:" << weeklyInterestPaid << endl;
+        cout << setw(50) << "Liquidation price of Bitcoin:" << liquidationPrice << endl;
+
+        // Ask if the user wants to repeat the calculation
+        cout << "\nDo you want to calculate another loan? (Y/N): ";
+        cin >> repeat;
+    } while (repeat == 'Y' || repeat == 'y');
+
+    cout << "Exiting program. Goodbye!" << endl;
+
+    return 0;
+}
+
